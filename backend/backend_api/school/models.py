@@ -5,8 +5,13 @@ class School(models.Model):
 	name = models.CharField(max_length=200)
 	location = models.CharField(max_length=200)
 	founded =  models.CharField(max_length=50)
-	price = models.DecimalField(
+	_price = models.DecimalField(
 				max_digits=15, 
 				decimal_places=2, 
 				default=99.99
 			)
+
+	@property
+	def get_price_discount(self):
+		return float((30/100) * self._price)
+	
