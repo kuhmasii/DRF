@@ -13,5 +13,5 @@ class School(models.Model):
 
 	@property
 	def get_price_discount(self):
-		return float((30/100) * self._price)
+		return (30/100) * float(self._price)
 	
