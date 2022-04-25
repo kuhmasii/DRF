@@ -1,14 +1,18 @@
-from rest_framework import generics
+from rest_framework import generics, permissions, authentication
 from rest_framework.response import Response
 from .models import School
-from api.mixins import StaffEditorPermissionMixin
+from .permissions import isStaffEditorPermission
 from school.serializers import SchoolSerializer
 
 
-class SchoolListCreateAPIView(StaffEditorPermissionMixin,
-                              generics.ListCreateAPIView):
+class SchoolListCreateAPIView(generics.ListCreateAPIView):
     queryset = School.objects.all()
     serializer_class = SchoolSerializer
+    authentication_classes = [authentication.SessionAuthentication]
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # permission_classes = (permissions.IsAuthenticated, )
+    # permission_classes = [permissions.DjangoModelPermissions]
+    permission_classes = (permissions.IsAdminUser, isStaffEditorPermission, )
 
     # adding additional data
     def perform_create(self, serializer):
@@ -21,21 +25,18 @@ class SchoolListCreateAPIView(StaffEditorPermissionMixin,
 
 # school_create_apiview = SchoolCreateAPIView.as_view()
 
-
-class SchoolDetailAPIView(StaffEditorPermissionMixin,
-                          generics.RetrieveAPIView):
+class SchoolDetailAPIView(generics.RetrieveAPIView):
     queryset = School.objects.all()
     serializer_class = SchoolSerializer
     lookup_field = 'pk'
 
 # school_detail_apiview = SchoolDetailAPIView.as_view()
 
-
-class SchoolUpdateAPIView(StaffEditorPermissionMixin,
-                          generics.UpdateAPIView):
+class SchoolUpdateAPIView(generics.UpdateAPIView):
     queryset = School.objects.all()
     serializer_class = SchoolSerializer
     lookup_field = 'pk'
+
 
     def perform_update(self, serializer):
         instance = serializer.save()
@@ -46,11 +47,11 @@ class SchoolUpdateAPIView(StaffEditorPermissionMixin,
 # school_update_apiview = SchoolUpdateAPIView.as_view()
 
 
-class SchoolDeleteAPIView(StaffEditorPermissionMixin,
-                          generics.DestroyAPIView):
+class SchoolDeleteAPIView(generics.DestroyAPIView):
     queryset = School.objects.all()
     serializer_class = SchoolSerializer
     lookup_field = 'pk'
+
 
     def perform_destroy(self, instance):
         # do anything you wana do before deleting
